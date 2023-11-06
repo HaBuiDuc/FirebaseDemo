@@ -16,4 +16,9 @@ class HomeViewModel : ViewModel() {
             _taskList.value = it
         }
     }
+
+    fun userLogout(
+    ) {
+        firebaseRepository.userLogout()
+    }
 }

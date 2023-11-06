@@ -1,5 +1,6 @@
 package com.buiducha.firebasedemo.ui.screens.home_screen
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,9 +14,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +54,27 @@ fun HomeScreen(
                     imageVector = Icons.Filled.Add,
                     contentDescription = null
                 )
+            }
+        },
+        topBar = {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                IconButton(
+                    onClick = {
+                        homeViewModel.userLogout()
+                        navController.popBackStack()
+                        navController.navigate(Screen.LoginScreen.route)
+                        Log.d("This is a log", "sign out: ")
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Logout,
+                        contentDescription = null
+                    )
+                }
             }
         }
     ) { padding ->
@@ -99,7 +123,7 @@ fun TaskItemView(
                 width = 0.4.dp,
                 color = Color.Gray,
 
-            )
+                )
             .padding(
                 vertical = 8.dp,
                 horizontal = 4.dp

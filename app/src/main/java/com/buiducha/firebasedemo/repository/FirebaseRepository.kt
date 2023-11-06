@@ -3,25 +3,26 @@ package com.buiducha.firebasedemo.repository
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.widget.NumberPicker
-import android.widget.NumberPicker.OnValueChangeListener
 import com.buiducha.firebasedemo.data.model.TaskItem
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlin.reflect.typeOf
 
 class FirebaseRepository private constructor(context: Context){
     private var auth: FirebaseAuth = Firebase.auth
     private val database = Firebase.database.getReference("tasks")
 
-    fun authListener() {
-
+    init {
+        val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            if (user == null) {
+                Log.d(TAG, "User log out: ")
+            }
+        }
     }
 
     fun getCurrentUser() = auth.currentUser
@@ -44,20 +45,42 @@ class FirebaseRepository private constructor(context: Context){
             override fun onCancelled(error: DatabaseError) {
             }
         })
-
     }
 
     fun deleteTask(
         taskId: String
     ) {
         Log.d(TAG, "deleteTask: $taskId")
-        database.child(taskId).removeValue()
-            .addOnSuccessListener {
-                Log.d(TAG, "delete successfully")
+        database.orderByChild("id").equalTo(taskId).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val taskList = mutableListOf<TaskItem>()
+                snapshot.children.forEach { shot ->
+                    shot.ref.removeValue()
+                }
+//                Log.d(TAG, tasks.toString())
             }
-            .addOnFailureListener {
-                Log.d(TAG, "delete failure")
+
+            override fun onCancelled(error: DatabaseError) {
             }
+        })
+    }
+
+    fun updateTaskStatus(
+        taskId: String,
+        isCompleted: Boolean
+    ) {
+        database.orderByChild("id").equalTo(taskId).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val taskList = mutableListOf<TaskItem>()
+                snapshot.children.forEach { shot ->
+                    shot.ref.removeValue()
+                }
+//                Log.d(TAG, tasks.toString())
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
     }
 
     fun addTask(
@@ -71,6 +94,11 @@ class FirebaseRepository private constructor(context: Context){
 
             }
         }
+    }
+
+    fun userLogout(
+    ) {
+        auth.signOut()
     }
 
     fun userLogin(

@@ -4,7 +4,7 @@ import java.util.Date
 import java.util.UUID
 
 data class TaskItem(
-    val id: Long = UUID.randomUUID().mostSignificantBits,
+    val id: String = UUID.randomUUID().mostSignificantBits.toString(),
     val userId: String = "",
     val title: String = "",
     val description: String = "",
